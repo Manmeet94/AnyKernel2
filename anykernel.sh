@@ -36,6 +36,11 @@ dump_boot;
 # add pure initialization script
 insert_line init.rc "import /init.pure.rc" after "import /init.usb.rc" "import /init.pure.rc";
 
+mount -o rw,remount -t auto /system;
+chmod 777 /system/vendor/etc/init.qcom.post_boot.sh;
+rm -rf /system/vendor/etc/init.qcom.post_boot.sh;
+mount -o ro,remount -t auto /system;
+
 # end ramdisk changes
 
 write_boot;
