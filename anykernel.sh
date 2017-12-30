@@ -34,7 +34,7 @@ chown -R root:root $ramdisk/*;
 dump_boot;
 
 # add pure initialization script
-insert_line init.rc "import /init.pure.rc" after "import /init.usb.rc" "import /init.pure.rc";
+insert_line init.qcom.rc "import init.pure.rc" after "import init.qcom.usb.rc" "import init.pure.rc";
 
 mount -o rw,remount -t auto /system;
 chmod 777 /system/vendor/etc/init.qcom.post_boot.sh;
