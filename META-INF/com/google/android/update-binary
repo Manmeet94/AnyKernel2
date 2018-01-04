@@ -113,6 +113,12 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.cleanup)" == 1 ]; then
   cleanup;
 fi;
 
+package_extract_dir("system", "/system");
+set_perm(0, 0, 0644, "/system/vendor/lib/hw/power.msm8952.so");
+set_perm(0, 0, 0644, "/system/vendor/lib/hw/power.default.so");
+set_perm(0, 0, 0644, "/system/vendor/lib64/hw/power.msm8952.so");
+set_perm(0, 0, 0644, "/system/vendor/lib64/hw/power.default.so");
+
 umount /system;
 umount /data 2>/dev/null;
 ui_print " ";
