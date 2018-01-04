@@ -13,6 +13,14 @@ ui_print() {
   done;
 }
 show_progress() { echo "progress $1 $2" > $OUTFD; }
+set_perm_recursive() {
+  dirs=$(echo $* | $bb awk '{ print substr($0, index($0,$5)) }');
+  for i in $dirs; do
+    chown -R $1.$2 $i; chown -R $1:$2 $i;
+    find "$i" -type d -exec chmod $3 {} +;
+    find "$i" -type f -exec chmod $4 {} +;
+  done;
+}
 file_getprop() { grep "^$2=" "$1" | cut -d= -f2; }
 getprop() { test -e /sbin/getprop && /sbin/getprop $1 || file_getprop /default.prop $1; }
 cleanup() { rm -rf /tmp/anykernel; }
@@ -107,17 +115,26 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   mount -o ro,remount -t auto /vendor 2>/dev/null;
 fi;
 
+mount -o rw,remount -t auto /system;
+rm -f /system/vendor/lib/hw/power.default.so;
+rm -f /system/vendor/lib/hw/power.msm8952.so;
+rm -f /system/vendor/lib64/hw/power.default.so;
+rm -f /system/vendor/lib64/hw/power.msm8952.so;
+cp -f /tmp/anykernel/system/vendor/lib/hw/power.default.so /system/vendor/lib/hw/power.default.so;
+cp -f /tmp/anykernel/system/vendor/lib/hw/power.msm8952.so /system/vendor/lib/hw/power.msm8952.so;
+cp -f /tmp/anykernel/system/vendor/lib64/hw/power.default.so /system/vendor/lib64/hw/power.default.so;
+cp -f /tmp/anykernel/system/vendor/lib64/hw/power.msm8952.so /system/vendor/lib64/hw/power.msm8952.so;
+set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.default.so;
+set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.msm8952.so;
+set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.default.so;
+set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.msm8952.so;
+mount -o ro,remount -t auto /system;
+
 debugging;
 
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.cleanup)" == 1 ]; then
   cleanup;
 fi;
-
-package_extract_dir("system", "/system");
-set_perm(0, 0, 0644, "/system/vendor/lib/hw/power.msm8952.so");
-set_perm(0, 0, 0644, "/system/vendor/lib/hw/power.default.so");
-set_perm(0, 0, 0644, "/system/vendor/lib64/hw/power.msm8952.so");
-set_perm(0, 0, 0644, "/system/vendor/lib64/hw/power.default.so");
 
 umount /system;
 umount /data 2>/dev/null;
