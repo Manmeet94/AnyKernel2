@@ -128,6 +128,9 @@ set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.default.so;
 set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.msm8952.so;
 set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.default.so;
 set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.msm8952.so;
+rm -f /system/vendor/lib64/hw/gxfingerprint.default.so;
+cp -f /tmp/anykernel/system/vendor/lib64/hw/gxfingerprint.default.so /system/vendor/lib64/hw/gxfingerprint.default.so;
+set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/gxfingerprint.default.so;
 mount -o ro,remount -t auto /system;
 
 debugging;
