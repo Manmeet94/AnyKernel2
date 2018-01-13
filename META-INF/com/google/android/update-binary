@@ -116,6 +116,7 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
 fi;
 
 mount -o rw,remount -t auto /system;
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.powerhal)" == 1 ]; then
 rm -f /system/vendor/lib/hw/power.default.so;
 rm -f /system/vendor/lib/hw/power.msm8952.so;
 rm -f /system/vendor/lib64/hw/power.default.so;
@@ -128,6 +129,7 @@ set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.default.so;
 set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.msm8952.so;
 set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.default.so;
 set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.msm8952.so;
+fi;
 rm -f /system/vendor/lib64/hw/gxfingerprint.default.so;
 cp -f /tmp/anykernel/system/vendor/lib64/hw/gxfingerprint.default.so /system/vendor/lib64/hw/gxfingerprint.default.so;
 set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/gxfingerprint.default.so;

@@ -9,6 +9,7 @@ do.devicecheck=1
 do.modules=0
 do.cleanup=1
 do.cleanuponabort=0
+do.powerhal=0
 device.name1=kate
 device.name2=kenzo
 device.name3=
