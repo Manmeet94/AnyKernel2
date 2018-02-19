@@ -13,6 +13,14 @@ ui_print() {
   done;
 }
 show_progress() { echo "progress $1 $2" > $OUTFD; }
+set_perm_recursive() {
+  dirs=$(echo $* | $bb awk '{ print substr($0, index($0,$5)) }');
+  for i in $dirs; do
+    chown -R $1.$2 $i; chown -R $1:$2 $i;
+    find "$i" -type d -exec chmod $3 {} +;
+    find "$i" -type f -exec chmod $4 {} +;
+  done;
+}
 file_getprop() { grep "^$2=" "$1" | cut -d= -f2; }
 if [ ! "$(getprop 2>/dev/null)" ]; then
   getprop() {
@@ -116,6 +124,41 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   mount -o ro,remount -t auto /system;
   mount -o ro,remount -t auto /vendor 2>/dev/null;
 fi;
+
+mount -o rw,remount -t auto /system;
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.powerhal)" == 1 ]; then
+ ui_print "";
+ ui_print "Installing custom PowerHAL...";
+ rm -f /system/vendor/lib/hw/power.default.so;
+ rm -f /system/vendor/lib/hw/power.msm8952.so;
+ rm -f /system/vendor/lib64/hw/power.default.so;
+ rm -f /system/vendor/lib64/hw/power.msm8952.so;
+ cp -f /tmp/anykernel/system/vendor/lib/hw/power.default.so /system/vendor/lib/hw/power.default.so;
+ cp -f /tmp/anykernel/system/vendor/lib/hw/power.msm8952.so /system/vendor/lib/hw/power.msm8952.so;
+ cp -f /tmp/anykernel/system/vendor/lib64/hw/power.default.so /system/vendor/lib64/hw/power.default.so;
+ cp -f /tmp/anykernel/system/vendor/lib64/hw/power.msm8952.so /system/vendor/lib64/hw/power.msm8952.so;
+ set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.default.so;
+ set_perm_recursive 0 0 0755 0644 /system/vendor/lib/hw/power.msm8952.so;
+ set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.default.so;
+ set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/power.msm8952.so;
+fi;
+
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.goodixlib)" == 1 ]; then
+ ui_print "";
+ ui_print "Installing custom Goodix lib...";
+ rm -f /system/vendor/lib64/hw/gxfingerprint.default.so;
+ cp -f /tmp/anykernel/system/vendor/lib64/hw/gxfingerprint.default.so /system/vendor/lib64/hw/gxfingerprint.default.so;
+ set_perm_recursive 0 0 0755 0644 /system/vendor/lib64/hw/gxfingerprint.default.so;
+fi;
+
+if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.rmpostboot)" == 1 ]; then
+ ui_print "";
+ ui_print "Removing init.qcom.post_boot.sh script";
+ chmod 777 /system/vendor/etc/init.qcom.post_boot.sh;
+ rm -rf /system/vendor/etc/init.qcom.post_boot.sh;
+fi;
+
+mount -o ro,remount -t auto /system;
 
 debugging;
 
